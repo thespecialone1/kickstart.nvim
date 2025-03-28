@@ -35,4 +35,45 @@ return {
       },
     },
   },
+  -- nvim-cmp configuration for autocompletion
+  {
+    'hrsh7th/nvim-cmp',
+    dependencies = {
+      'hrsh7th/cmp-buffer', -- Suggest words from the current file (includes comments)
+      'hrsh7th/cmp-path', -- Path completions
+      'hrsh7th/cmp-nvim-lsp', -- LSP-based completions
+      'saadparwaiz1/cmp_luasnip', -- Snippet completions
+      'L3MON4D3/LuaSnip', -- Snippet engine
+    },
+    opts = function()
+      local cmp = require 'cmp'
+      return {
+        mapping = cmp.mapping.preset.insert {
+          ['<Tab>'] = cmp.mapping.select_next_item(),
+          ['<S-Tab>'] = cmp.mapping.select_prev_item(),
+          ['<CR>'] = cmp.mapping.confirm { select = true },
+        },
+        sources = cmp.config.sources {
+          { name = 'nvim_lsp' }, -- LSP suggestions
+          { name = 'buffer' }, -- Buffer words (includes comments)
+          { name = 'luasnip' }, -- Snippet completions
+          { name = 'path' }, -- File system paths
+        },
+        completion = {
+          keyword_length = 1, -- Trigger completion quickly
+        },
+        formatting = {
+          format = function(entry, vim_item)
+            vim_item.menu = ({
+              buffer = '[Buffer]',
+              nvim_lsp = '[LSP]',
+              luasnip = '[Snippet]',
+              path = '[Path]',
+            })[entry.source.name]
+            return vim_item
+          end,
+        },
+      }
+    end,
+  },
 }
